@@ -1,5 +1,7 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+
 include 'Slim/Slim.php';
 
 $app = new Slim();
@@ -9,12 +11,12 @@ $app->get('/contacts/:id', 'getContact');
 $app->post('/contacts', 'addContact');
 $app->put('/contacts/:id', 'updateContact');
 $app->delete('/contacts/:id', 'deleteContact');
-$app->get('/contacts/search/:query', 'findByParameter');
+$app->post('/contacts/search', 'findByParameter');
 
 $app->run();
 
 function getContacts() {
-	$sql = "SELECT * FROM contacts ORDER BY name";
+	$sql = "SELECT * FROM contacts ORDER BY LastName LIMIT 700, 900";
     try {
         $db = getConnection();
         $stmt = $db->query($sql);
@@ -89,13 +91,92 @@ function deleteContact($id) {
     }
 }
 
-function findByParameter($query) {
-	$sql = "SELECT * FROM contacts WHERE UPPER(name) LIKE :query ORDER BY name";
+function findByParameter() {
+	$request = Slim::getInstance()->request();
+    $requestparams = json_decode($request->getBody());
+    //$requestparams->FirstName = $FirstName;
+    //$requestparams->LastName = $LastName;
+    //$requestparams->Address1 = $Address1;
+    $FirstName = $requestparams->FirstName;
+    $LastName = $requestparams->LastName;
+    $Address1 = $requestparams->Address1;
+    $Email1 = $requestparams->Email1;
+    $Phone1 = $requestparams->Phone1;
+    $City = $requestparams->City;
+
+    // Keep track of received parameters
+    $paramsreceived = 0;
+
+    // Check parameters for activity. If not active, assign wildcard for search.
+    // Additionally, add to the received counter if active.
+    if(isset($requestparams->FirstName)) {
+    	$FirstName = "%".$FirstName."%";
+    	$paramsreceived = $paramsreceived + 1;
+    } else {
+    	$FirstName = "%";
+    }
+    if(isset($requestparams->LastName)) {
+    	$LastName = "%".$LastName."%";
+    	$paramsreceived = $paramsreceived + 1;
+    } else {
+    	$LastName = "%";
+    }
+    if(isset($requestparams->Address1)) {
+    	$Address1 = "%".$Address1."%";
+    	$paramsreceived = $paramsreceived + 1;
+    } else {
+    	$Address1 = "%";
+    }
+    if(isset($requestparams->Email1)) {
+    	$Email1 = "%".$Email1."%";
+    	$paramsreceived = $paramsreceived + 1;
+    } else {
+    	$Email1 = "%";
+    }
+    if(isset($requestparams->Phone1)) {
+    	$Phone1 = "%".$Phone1."%";
+    	$paramsreceived = $paramsreceived + 1;
+    } else {
+    	$Phone1 = "%";
+    }
+    if(isset($requestparams->City)) {
+    	$City = "%".$City."%";
+    	$paramsreceived = $paramsreceived + 1;
+    } else {
+    	$City = "%";
+    }
+
+    // If no parameters are active, throw an error and exit.
+    // If this were not here, the entire database would be returned when no parameters were entered.
+    if($paramsreceived = 0){
+    	echo '{"error":{"text":'. $e->getMessage() .'}}';
+    	exit;
+    }
+
+    $sql = "SELECT * FROM contacts WHERE
+    	FirstName LIKE :firstname AND
+    	LastName LIKE :lastname AND
+    	Address1 LIKE :address1 AND
+    	Email LIKE :email1 AND
+    	HomePhone LIKE :phone1 AND
+    	City LIKE :city 
+    ORDER BY LastName
+    LIMIT 200";
+    
+
+    
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
-        $query = "%".$query."%";
-        $stmt->bindParam("query", $query);
+        //$query = "%".$query."%";
+        
+        $stmt->bindParam("firstname", $FirstName);
+        $stmt->bindParam("lastname", $LastName);
+        $stmt->bindParam("address1", $Address1);
+        $stmt->bindParam("email1", $Email1);
+        $stmt->bindParam("phone1", $Phone1);
+        $stmt->bindParam("city", $City);
+
         $stmt->execute();
         $contacts = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
