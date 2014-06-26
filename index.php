@@ -16,7 +16,7 @@ $app->post('/contacts/search', 'findByParameter');
 $app->run();
 
 function getContacts() {
-	$sql = "SELECT * FROM contacts ORDER BY LastName LIMIT 700, 900";
+	$sql = "SELECT id, FirstName, LastName FROM contacts ORDER BY LastName";
     try {
         $db = getConnection();
         $stmt = $db->query($sql);
