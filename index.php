@@ -1,6 +1,25 @@
 <?php
 
-header("Access-Control-Allow-Origin: *");
+ // Allow from any origin
+    if (isset($_SERVER['HTTP_ORIGIN'])) {
+        header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Max-Age: 86400');    // cache for 1 day
+    }
+
+    // Access-Control headers are received during OPTIONS requests
+    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+
+        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+            header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");         
+
+        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+            header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+
+        exit(0);
+    }
+
+   
 
 include 'Slim/Slim.php';
 
@@ -64,12 +83,55 @@ function updateContact($id) {
 	$request = Slim::getInstance()->request();
     $body = $request->getBody();
     $contact = json_decode($body);
-    $sql = "UPDATE contacts SET name=:name WHERE id=:id";
+    $sql = "UPDATE contacts 
+    SET 
+    Prefix=:Prefix, 
+    FirstName=:FirstName, 
+    LastName=:LastName, 
+    Title=:Title, 
+    HomePhone=:HomePhone, 
+    WorkPhone=:WorkPhone, 
+    CellPhone=:CellPhone, 
+    Fax=:Fax, 
+    Email=:Email, 
+    WebAddress=:WebAddress, 
+    Address1=:Address1, 
+    Address2=:Address2, 
+    City=:City, 
+    StateRegion=:StateRegion, 
+    Zip=:Zip, 
+    Country=:Country, 
+    AdditionalInfo=:AdditionalInfo, 
+    Notes=:Notes, 
+    CurbSideNotes=:CurbSideNotes 
+
+
+    WHERE id=:id";
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
-        $stmt->bindParam("name", $contact->name);
+
         $stmt->bindParam("id", $id);
+        $stmt->bindParam("Prefix", $contact->Prefix);
+        $stmt->bindParam("FirstName", $contact->FirstName);
+        $stmt->bindParam("LastName", $contact->LastName);
+        $stmt->bindParam("Title", $contact->Title);
+        $stmt->bindParam("HomePhone", $contact->HomePhone);
+        $stmt->bindParam("WorkPhone", $contact->WorkPhone);
+        $stmt->bindParam("CellPhone", $contact->CellPhone);
+        $stmt->bindParam("Fax", $contact->Fax);
+        $stmt->bindParam("Email", $contact->Email);
+        $stmt->bindParam("WebAddress", $contact->WebAddress);
+        $stmt->bindParam("Address1", $contact->Address1);
+        $stmt->bindParam("Address2", $contact->Address2);
+        $stmt->bindParam("City", $contact->City);
+        $stmt->bindParam("StateRegion", $contact->StateRegion);
+        $stmt->bindParam("Zip", $contact->Zip);
+        $stmt->bindParam("Country", $contact->Country);
+        $stmt->bindParam("AdditionalInfo", $contact->AdditionalInfo);
+        $stmt->bindParam("Notes", $contact->Notes);
+        $stmt->bindParam("CurbSideNotes", $contact->CurbSideNotes);
+        
         $stmt->execute();
         $db = null;
         echo json_encode($contact);
