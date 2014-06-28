@@ -67,7 +67,7 @@ function addContact() {
     $contact = json_decode($request->getBody());
     $sql = "INSERT INTO contacts
 
-    (Prefix, FirstName, LastName, Title, 
+    (Prefix, FirstName, LastName, Company, Title, 
     	HomePhone, WorkPhone, CellPhone, Fax, 
     	Email, WebAddress, Address1, Address2, 
     	City, StateRegion, Zip, Country, 
@@ -75,7 +75,7 @@ function addContact() {
 
     VALUES
 
-    (:Prefix, :FirstName, :LastName, :Title,
+    (:Prefix, :FirstName, :LastName, :Company, :Title,
     	:HomePhone, :WorkPhone, :CellPhone, :Fax,
     	:Email, :WebAddress, :Address1, :Address2, 
     	:City, :StateRegion, :Zip, :Country, 
@@ -87,6 +87,7 @@ function addContact() {
         $stmt->bindParam("Prefix", $contact->Prefix);
         $stmt->bindParam("FirstName", $contact->FirstName);
         $stmt->bindParam("LastName", $contact->LastName);
+        $stmt->bindParam("Company", $contact->Company);
         $stmt->bindParam("Title", $contact->Title);
         $stmt->bindParam("HomePhone", $contact->HomePhone);
         $stmt->bindParam("WorkPhone", $contact->WorkPhone);
@@ -122,6 +123,7 @@ function updateContact($id) {
     Prefix=:Prefix, 
     FirstName=:FirstName, 
     LastName=:LastName, 
+    Company=:Company, 
     Title=:Title, 
     HomePhone=:HomePhone, 
     WorkPhone=:WorkPhone, 
@@ -149,6 +151,7 @@ function updateContact($id) {
         $stmt->bindParam("Prefix", $contact->Prefix);
         $stmt->bindParam("FirstName", $contact->FirstName);
         $stmt->bindParam("LastName", $contact->LastName);
+        $stmt->bindParam("Company", $contact->Company);
         $stmt->bindParam("Title", $contact->Title);
         $stmt->bindParam("HomePhone", $contact->HomePhone);
         $stmt->bindParam("WorkPhone", $contact->WorkPhone);
@@ -195,6 +198,7 @@ function findByParameter() {
     //$requestparams->Address1 = $Address1;
     $FirstName = $requestparams->FirstName;
     $LastName = $requestparams->LastName;
+    $Company = $requestparams->Company;
     $Address1 = $requestparams->Address1;
     $Email1 = $requestparams->Email1;
     $Phone1 = $requestparams->Phone1;
@@ -216,6 +220,12 @@ function findByParameter() {
     	$paramsreceived = $paramsreceived + 1;
     } else {
     	$LastName = "%";
+    }
+    if(isset($requestparams->Company)) {
+    	$Company = "%".$Company."%";
+    	$paramsreceived = $paramsreceived + 1;
+    } else {
+    	$Company = "%";
     }
     if(isset($requestparams->Address1)) {
     	$Address1 = "%".$Address1."%";
@@ -252,6 +262,7 @@ function findByParameter() {
     $sql = "SELECT * FROM contacts WHERE
     	FirstName LIKE :firstname AND
     	LastName LIKE :lastname AND
+    	Company LIKE :company AND
     	Address1 LIKE :address1 AND
     	Email LIKE :email1 AND
     	HomePhone LIKE :phone1 AND
@@ -268,6 +279,7 @@ function findByParameter() {
         
         $stmt->bindParam("firstname", $FirstName);
         $stmt->bindParam("lastname", $LastName);
+        $stmt->bindParam("company", $Company);
         $stmt->bindParam("address1", $Address1);
         $stmt->bindParam("email1", $Email1);
         $stmt->bindParam("phone1", $Phone1);
