@@ -65,11 +65,45 @@ function getContact($id) {
 function addContact() {
 	$request = Slim::getInstance()->request();
     $contact = json_decode($request->getBody());
-    $sql = "INSERT INTO contacts (name) VALUES (:name)";
+    $sql = "INSERT INTO contacts
+
+    (Prefix, FirstName, LastName, Title, 
+    	HomePhone, WorkPhone, CellPhone, Fax, 
+    	Email, WebAddress, Address1, Address2, 
+    	City, StateRegion, Zip, Country, 
+    	AdditionalInfo, Notes, CurbSideNotes) 
+
+    VALUES
+
+    (:Prefix, :FirstName, :LastName, :Title,
+    	:HomePhone, :WorkPhone, :CellPhone, :Fax,
+    	:Email, :WebAddress, :Address1, :Address2, 
+    	:City, :StateRegion, :Zip, :Country, 
+    	:AdditionalInfo, :Notes, :CurbSideNotes)";
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
-        $stmt->bindParam("name", $contact->name);
+
+        $stmt->bindParam("Prefix", $contact->Prefix);
+        $stmt->bindParam("FirstName", $contact->FirstName);
+        $stmt->bindParam("LastName", $contact->LastName);
+        $stmt->bindParam("Title", $contact->Title);
+        $stmt->bindParam("HomePhone", $contact->HomePhone);
+        $stmt->bindParam("WorkPhone", $contact->WorkPhone);
+        $stmt->bindParam("CellPhone", $contact->CellPhone);
+        $stmt->bindParam("Fax", $contact->Fax);
+        $stmt->bindParam("Email", $contact->Email);
+        $stmt->bindParam("WebAddress", $contact->WebAddress);
+        $stmt->bindParam("Address1", $contact->Address1);
+        $stmt->bindParam("Address2", $contact->Address2);
+        $stmt->bindParam("City", $contact->City);
+        $stmt->bindParam("StateRegion", $contact->StateRegion);
+        $stmt->bindParam("Zip", $contact->Zip);
+        $stmt->bindParam("Country", $contact->Country);
+        $stmt->bindParam("AdditionalInfo", $contact->AdditionalInfo);
+        $stmt->bindParam("Notes", $contact->Notes);
+        $stmt->bindParam("CurbSideNotes", $contact->CurbSideNotes);
+
         $stmt->execute();
         $contact->id = $db->lastInsertId();
         $db = null;
