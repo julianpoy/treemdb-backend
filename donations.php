@@ -25,8 +25,7 @@ include 'Slim/Slim.php';
 
 $app = new Slim();
 
-$app->get('/donations', 'getDonations');
-$app->get('/donations/:id', 'getDonation');
+$app->get('/donations/:id', 'getDonations');
 $app->post('/donations', 'addDonation');
 $app->put('/donations/:id', 'updateDonation');
 $app->delete('/donations/:id', 'deleteDonation');
@@ -35,7 +34,7 @@ $app->post('/donations/search', 'findByParameter');
 $app->run();
 
 function getDonations($Contact_id) {
-    $sql = "SELECT id, Date, Amount FROM donations WHERE Contact_id=:Contact_id ORDER BY Date";
+    $sql = "SELECT id, Date, Amount FROM donations WHERE Contact_id=:Contact_id ORDER BY Date DESC";
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
@@ -44,21 +43,6 @@ function getDonations($Contact_id) {
         $donations = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
         echo '{"donations": ' . json_encode($donations) . '}';
-    } catch(PDOException $e) {
-        echo '{"error":{"text":'. $e->getMessage() .'}}';
-    }
-}
-
-function getDonation($id) {
-    $sql = "SELECT * FROM donations WHERE id=:id";
-    try {
-        $db = getConnection();
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam("id", $id);
-        $stmt->execute();
-        $donation = $stmt->fetchObject();
-        $db = null;
-        echo json_encode($donation);
     } catch(PDOException $e) {
         echo '{"error":{"text":'. $e->getMessage() .'}}';
     }
