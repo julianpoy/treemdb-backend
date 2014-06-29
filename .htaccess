@@ -2,4 +2,8 @@ RewriteEngine On
  
 RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ index.php [QSA,L]
+RewriteRule ^(contacts.*)$ index.php [QSA,L]
+
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(donations.*)$ donations.php [QSA,L]
