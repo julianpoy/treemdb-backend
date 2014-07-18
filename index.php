@@ -243,8 +243,16 @@ function updateContact($id) {
     Country=:Country, 
     AdditionalInfo=:AdditionalInfo, 
     Notes=:Notes, 
-    CurbSideNotes=:CurbSideNotes 
-
+    CurbSideNotes=:CurbSideNotes,
+    YMT=:YMT,
+    YouthDirector=:YouthDirector, 
+    Board=:Board, 
+    APT=:APT, 
+    TreeGuardian=:TreeGuardian,
+    FosterCare=:FosterCare, 
+    Volunteer=:Volunteer, 
+    Small=:Small, 
+    Tall=:Tall
 
     WHERE id=:id";
     try {
@@ -272,6 +280,15 @@ function updateContact($id) {
         $stmt->bindParam("AdditionalInfo", $contact->AdditionalInfo);
         $stmt->bindParam("Notes", $contact->Notes);
         $stmt->bindParam("CurbSideNotes", $contact->CurbSideNotes);
+        $stmt->bindParam("YMT", $contact->YMT);
+        $stmt->bindParam("YouthDirector", $contact->YouthDirector);
+        $stmt->bindParam("Board", $contact->Board);
+        $stmt->bindParam("APT", $contact->APT);
+        $stmt->bindParam("TreeGuardian", $contact->TreeGuardian);
+        $stmt->bindParam("FosterCare", $contact->FosterCare);
+        $stmt->bindParam("Volunteer", $contact->Volunteer);
+        $stmt->bindParam("Small", $contact->Small);
+        $stmt->bindParam("Tall", $contact->Tall);
         
         $stmt->execute();
         $db = null;
