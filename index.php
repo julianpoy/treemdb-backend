@@ -35,7 +35,7 @@ $app->post('/contacts/search', 'findByParameter');
 $app->run();
 
 function getContacts() {
-	$sql = "SELECT id, FirstName, LastName FROM contacts ORDER BY LastName";
+    $sql = "SELECT id, FirstName, LastName FROM contacts ORDER BY LastName";
     try {
         $db = getConnection();
         $stmt = $db->query($sql);
@@ -48,7 +48,7 @@ function getContacts() {
 }
 
 function getContact($id) {
-	$sql = "SELECT * FROM contacts WHERE id=:id";
+    $sql = "SELECT * FROM contacts WHERE id=:id";
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
@@ -63,23 +63,86 @@ function getContact($id) {
 }
 
 function addContact() {
-	$request = Slim::getInstance()->request();
+    $request = Slim::getInstance()->request();
     $contact = json_decode($request->getBody());
+
+    if(!isset($contact->Prefix)){
+        $contact->Prefix = "";
+    }
+    if(!isset($contact->FirstName)){
+        $contact->FirstName = "";
+    }
+    if(!isset($contact->LastName)){
+        $contact->LastName = "";
+    }
+    if(!isset($contact->Company)){
+        $contact->Company = "";
+    }
+    if(!isset($contact->Title)){
+        $contact->Title = "";
+    }
+    if(!isset($contact->HomePhone)){
+        $contact->HomePhone = "";
+    }
+    if(!isset($contact->WorkPhone)){
+        $contact->WorkPhone = "";
+    }
+    if(!isset($contact->CellPhone)){
+        $contact->CellPhone = "";
+    }
+    if(!isset($contact->Fax)){
+        $contact->Fax = "";
+    }
+    if(!isset($contact->Email)){
+        $contact->Email = "";
+    }
+    if(!isset($contact->WebAddress)){
+        $contact->WebAddress = "";
+    }
+    if(!isset($contact->Address1)){
+        $contact->Address1 = "";
+    }
+    if(!isset($contact->Address2)){
+        $contact->Address2 = "";
+    }
+    if(!isset($contact->City)){
+        $contact->City = "";
+    }
+    if(!isset($contact->StateRegion)){
+        $contact->StateRegion = "";
+    }
+    if(!isset($contact->Zip)){
+        $contact->Zip = "";
+    }
+    if(!isset($contact->Country)){
+        $contact->Country = "";
+    }
+    if(!isset($contact->AdditionalInfo)){
+        $contact->AdditionalInfo = "";
+    }
+    if(!isset($contact->Notes)){
+        $contact->Notes = "";
+    }
+    if(!isset($contact->CurbSideNotes)){
+        $contact->CurbSideNotes = "";
+    }
+
+
     $sql = "INSERT INTO contacts
 
     (Prefix, FirstName, LastName, Company, Title, 
-    	HomePhone, WorkPhone, CellPhone, Fax, 
-    	Email, WebAddress, Address1, Address2, 
-    	City, StateRegion, Zip, Country, 
-    	AdditionalInfo, Notes, CurbSideNotes) 
+        HomePhone, WorkPhone, CellPhone, Fax, 
+        Email, WebAddress, Address1, Address2, 
+        City, StateRegion, Zip, Country, 
+        AdditionalInfo, Notes, CurbSideNotes) 
 
     VALUES
 
     (:Prefix, :FirstName, :LastName, :Company, :Title,
-    	:HomePhone, :WorkPhone, :CellPhone, :Fax,
-    	:Email, :WebAddress, :Address1, :Address2, 
-    	:City, :StateRegion, :Zip, :Country, 
-    	:AdditionalInfo, :Notes, :CurbSideNotes)";
+        :HomePhone, :WorkPhone, :CellPhone, :Fax,
+        :Email, :WebAddress, :Address1, :Address2, 
+        :City, :StateRegion, :Zip, :Country, 
+        :AdditionalInfo, :Notes, :CurbSideNotes)";
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
@@ -115,7 +178,7 @@ function addContact() {
 }
 
 function updateContact($id) {
-	$request = Slim::getInstance()->request();
+    $request = Slim::getInstance()->request();
     $body = $request->getBody();
     $contact = json_decode($body);
     $sql = "UPDATE contacts 
@@ -178,7 +241,7 @@ function updateContact($id) {
 }
 
 function deleteContact($id) {
-	$sql = "DELETE FROM contacts WHERE id=:id";
+    $sql = "DELETE FROM contacts WHERE id=:id";
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
@@ -201,7 +264,7 @@ function deleteContact($id) {
 }
 
 function findByParameter() {
-	$request = Slim::getInstance()->request();
+    $request = Slim::getInstance()->request();
     $requestparams = json_decode($request->getBody());
     //$requestparams->FirstName = $FirstName;
     //$requestparams->LastName = $LastName;
@@ -220,63 +283,63 @@ function findByParameter() {
     // Check parameters for activity. If not active, assign wildcard for search.
     // Additionally, add to the received counter if active.
     if(isset($requestparams->FirstName)) {
-    	$FirstName = "%".$FirstName."%";
-    	$paramsreceived = $paramsreceived + 1;
+        $FirstName = "%".$FirstName."%";
+        $paramsreceived = $paramsreceived + 1;
     } else {
-    	$FirstName = "%";
+        $FirstName = "%";
     }
     if(isset($requestparams->LastName)) {
-    	$LastName = "%".$LastName."%";
-    	$paramsreceived = $paramsreceived + 1;
+        $LastName = "%".$LastName."%";
+        $paramsreceived = $paramsreceived + 1;
     } else {
-    	$LastName = "%";
+        $LastName = "%";
     }
     if(isset($requestparams->Company)) {
-    	$Company = "%".$Company."%";
-    	$paramsreceived = $paramsreceived + 1;
+        $Company = "%".$Company."%";
+        $paramsreceived = $paramsreceived + 1;
     } else {
-    	$Company = "%";
+        $Company = "%";
     }
     if(isset($requestparams->Address1)) {
-    	$Address1 = "%".$Address1."%";
-    	$paramsreceived = $paramsreceived + 1;
+        $Address1 = "%".$Address1."%";
+        $paramsreceived = $paramsreceived + 1;
     } else {
-    	$Address1 = "%";
+        $Address1 = "%";
     }
     if(isset($requestparams->Email1)) {
-    	$Email1 = "%".$Email1."%";
-    	$paramsreceived = $paramsreceived + 1;
+        $Email1 = "%".$Email1."%";
+        $paramsreceived = $paramsreceived + 1;
     } else {
-    	$Email1 = "%";
+        $Email1 = "%";
     }
     if(isset($requestparams->Phone1)) {
-    	$Phone1 = "%".$Phone1."%";
-    	$paramsreceived = $paramsreceived + 1;
+        $Phone1 = "%".$Phone1."%";
+        $paramsreceived = $paramsreceived + 1;
     } else {
-    	$Phone1 = "%";
+        $Phone1 = "%";
     }
     if(isset($requestparams->City)) {
-    	$City = "%".$City."%";
-    	$paramsreceived = $paramsreceived + 1;
+        $City = "%".$City."%";
+        $paramsreceived = $paramsreceived + 1;
     } else {
-    	$City = "%";
+        $City = "%";
     }
 
     // If no parameters are active, throw an error and exit.
     // If this were not here, the entire database would be returned when no parameters were entered.
     if($paramsreceived = 0){
-    	echo '{"error":{"text":'. $e->getMessage() .'}}';
-    	exit;
+        echo '{"error":{"text":'. $e->getMessage() .'}}';
+        exit;
     }
 
     $sql = "SELECT * FROM contacts WHERE
-    	FirstName LIKE :firstname AND
-    	LastName LIKE :lastname AND
-    	Company LIKE :company AND
-    	Address1 LIKE :address1 AND
-    	Email LIKE :email1 AND
-    	HomePhone LIKE :phone1 AND
-    	City LIKE :city 
+        FirstName LIKE :firstname AND
+        LastName LIKE :lastname AND
+        Company LIKE :company AND
+        Address1 LIKE :address1 AND
+        Email LIKE :email1 AND
+        HomePhone LIKE :phone1 AND
+        City LIKE :city 
     ORDER BY LastName
     LIMIT 200";
     
@@ -305,13 +368,13 @@ function findByParameter() {
 }
 
 function getConnection() {
-	$dbhost="kondeo.com";
-	$dbuser="treemadmin";
-	$dbpass="13Brownies";
-	$dbname="treemdb";
-	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);	
-	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	return $dbh;
+    $dbhost="kondeo.com";
+    $dbuser="treemadmin";
+    $dbpass="13Brownies";
+    $dbname="treemdb";
+    $dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);  
+    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    return $dbh;
 }
 
 ?>
