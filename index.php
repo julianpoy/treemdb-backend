@@ -205,6 +205,7 @@ function addContact() {
         $stmt->bindParam("APT", $contact->APT);
         $stmt->bindParam("TreeGuardian", $contact->TreeGuardian);
         $stmt->bindParam("FosterCare", $contact->FosterCare);
+        $stmt->bindParam("Volunteer", $contact->Volunteer);
         $stmt->bindParam("Small", $contact->Small);
         $stmt->bindParam("Tall", $contact->Tall);
 
