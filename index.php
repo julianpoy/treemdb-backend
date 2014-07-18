@@ -126,6 +126,34 @@ function addContact() {
     if(!isset($contact->CurbSideNotes)){
         $contact->CurbSideNotes = "";
     }
+    //Flags
+    if(!isset($contact->YMT)){
+        $contact->YMT = "0";
+    }
+    if(!isset($contact->YouthDirector)){
+        $contact->YouthDirector = "0";
+    }
+    if(!isset($contact->Board)){
+        $contact->Board = "0";
+    }
+    if(!isset($contact->APT)){
+        $contact->APT = "0";
+    }
+    if(!isset($contact->TreeGuardian)){
+        $contact->TreeGuardian = "0";
+    }
+    if(!isset($contact->FosterCare)){
+        $contact->FosterCare = "0";
+    }
+    if(!isset($contact->Volunteer)){
+        $contact->Volunteer = "0";
+    }
+    if(!isset($contact->Small)){
+        $contact->Small = "0";
+    }
+    if(!isset($contact->Tall)){
+        $contact->Tall = "0";
+    }
 
 
     $sql = "INSERT INTO contacts
@@ -134,7 +162,9 @@ function addContact() {
         HomePhone, WorkPhone, CellPhone, Fax, 
         Email, WebAddress, Address1, Address2, 
         City, StateRegion, Zip, Country, 
-        AdditionalInfo, Notes, CurbSideNotes) 
+        AdditionalInfo, Notes, CurbSideNotes, YMT,
+        YouthDirector, Board, APT, TreeGuardian,
+        FosterCare, Volunteer, Small, Tall) 
 
     VALUES
 
@@ -142,7 +172,9 @@ function addContact() {
         :HomePhone, :WorkPhone, :CellPhone, :Fax,
         :Email, :WebAddress, :Address1, :Address2, 
         :City, :StateRegion, :Zip, :Country, 
-        :AdditionalInfo, :Notes, :CurbSideNotes)";
+        :AdditionalInfo, :Notes, :CurbSideNotes, :YMT,
+        :YouthDirector, :Board, :APT, :TreeGuardian,
+        :FosterCare, :Volunteer, :Small, :Tall)";
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
@@ -167,6 +199,14 @@ function addContact() {
         $stmt->bindParam("AdditionalInfo", $contact->AdditionalInfo);
         $stmt->bindParam("Notes", $contact->Notes);
         $stmt->bindParam("CurbSideNotes", $contact->CurbSideNotes);
+        $stmt->bindParam("YMT", $contact->YMT);
+        $stmt->bindParam("YouthDirector", $contact->YouthDirector);
+        $stmt->bindParam("Board", $contact->Board);
+        $stmt->bindParam("APT", $contact->APT);
+        $stmt->bindParam("TreeGuardian", $contact->TreeGuardian);
+        $stmt->bindParam("FosterCare", $contact->FosterCare);
+        $stmt->bindParam("Small", $contact->Small);
+        $stmt->bindParam("Tall", $contact->Tall);
 
         $stmt->execute();
         $contact->id = $db->lastInsertId();
