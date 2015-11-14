@@ -426,9 +426,9 @@ function findByParameter() {
 }
 
 function getConnection() {
-    $dbhost="kondeo.com";
-    $dbuser="treemadmin";
-    $dbpass="13Brownies";
+    $dbhost="localhost";
+    $dbuser="root";
+    $dbpass="";
     $dbname="treemdb";
     $dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);  
     $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
