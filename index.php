@@ -325,6 +325,16 @@ function findByParameter() {
     $request = Slim::getInstance()->request();
     $params = json_decode($request->getBody(), true);
 
+    //Keep track of the keys a user could search for (anti-sql injection)
+    $allowedKeys = array(
+        "Prefix", "FirstName", "LastName", "Company", "Title",
+        "HomePhone", "WorkPhone", "CellPhone", "Fax",
+        "Email", "WebAddress", "Address1", "Address2",
+        "City", "StateRegion", "Zip", "Country",
+        "AdditionalInfo", "Notes", "CurbSideNotes", "YMT",
+        "YouthDirector", "Board", "APT", "TreeGuardian",
+        "FosterCare", "Volunteer", "Small", "Tall");
+
     // If no parameters are active, throw an error and exit.
     // If this were not here, the entire database would be returned when no parameters were entered.
     if(count($params) == 0){
@@ -332,20 +342,34 @@ function findByParameter() {
         exit;
     }
 
+    //Check all provided keys to ensure only valid keys are being passed
+    $keys = array_keys($params);
+    for($key in $keys){
+        if(!in_array($key, $allowedKeys)){
+            echo '{"error":{"text":"You passed an invalid parameter ' . $key . '"}}';
+            exit;
+        }
+    }
+
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
 
+        //Standard sql select to be concatinated to
         $sql = "SELECT * FROM contacts WHERE ";
 
-        $keys = array_keys($params);
+        //Build query onto select from passed keys and values
         for($i=0;$i<count($params);$i++){
+            //Bind a parameter
             $stmt->bindParam($keys[i], $params[$keys[i]]);
-            if($i != 0) $sql .= "AND ";
+            //Only on subsequent and not the last
+            if($i != 0 && $i != count($params)-1) $sql .= "AND ";
+            //Build the sql
             $sql .= $keys[i] . " LIKE :" . $keys[i] . " ";
         }
 
-        $sql .= "ORDER BY LastName LIMIT 200 ";
+        //Finish the sql off
+        $sql .= "ORDER BY LastName LIMIT 400 ";
 
         $stmt->execute();
         $contacts = $stmt->fetchAll(PDO::FETCH_OBJ);
