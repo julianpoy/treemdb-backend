@@ -11,7 +11,7 @@
     if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
         if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
-            header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");         
+            header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
 
         if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
             header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
@@ -19,7 +19,7 @@
         exit(0);
     }
 
-   
+
 
 include 'Slim/Slim.php';
 
@@ -158,20 +158,20 @@ function addContact() {
 
     $sql = "INSERT INTO contacts
 
-    (Prefix, FirstName, LastName, Company, Title, 
-        HomePhone, WorkPhone, CellPhone, Fax, 
-        Email, WebAddress, Address1, Address2, 
-        City, StateRegion, Zip, Country, 
+    (Prefix, FirstName, LastName, Company, Title,
+        HomePhone, WorkPhone, CellPhone, Fax,
+        Email, WebAddress, Address1, Address2,
+        City, StateRegion, Zip, Country,
         AdditionalInfo, Notes, CurbSideNotes, YMT,
         YouthDirector, Board, APT, TreeGuardian,
-        FosterCare, Volunteer, Small, Tall) 
+        FosterCare, Volunteer, Small, Tall)
 
     VALUES
 
     (:Prefix, :FirstName, :LastName, :Company, :Title,
         :HomePhone, :WorkPhone, :CellPhone, :Fax,
-        :Email, :WebAddress, :Address1, :Address2, 
-        :City, :StateRegion, :Zip, :Country, 
+        :Email, :WebAddress, :Address1, :Address2,
+        :City, :StateRegion, :Zip, :Country,
         :AdditionalInfo, :Notes, :CurbSideNotes, :YMT,
         :YouthDirector, :Board, :APT, :TreeGuardian,
         :FosterCare, :Volunteer, :Small, :Tall)";
@@ -222,36 +222,36 @@ function updateContact($id) {
     $request = Slim::getInstance()->request();
     $body = $request->getBody();
     $contact = json_decode($body);
-    $sql = "UPDATE contacts 
-    SET 
-    Prefix=:Prefix, 
-    FirstName=:FirstName, 
-    LastName=:LastName, 
-    Company=:Company, 
-    Title=:Title, 
-    HomePhone=:HomePhone, 
-    WorkPhone=:WorkPhone, 
-    CellPhone=:CellPhone, 
-    Fax=:Fax, 
-    Email=:Email, 
-    WebAddress=:WebAddress, 
-    Address1=:Address1, 
-    Address2=:Address2, 
-    City=:City, 
-    StateRegion=:StateRegion, 
-    Zip=:Zip, 
-    Country=:Country, 
-    AdditionalInfo=:AdditionalInfo, 
-    Notes=:Notes, 
+    $sql = "UPDATE contacts
+    SET
+    Prefix=:Prefix,
+    FirstName=:FirstName,
+    LastName=:LastName,
+    Company=:Company,
+    Title=:Title,
+    HomePhone=:HomePhone,
+    WorkPhone=:WorkPhone,
+    CellPhone=:CellPhone,
+    Fax=:Fax,
+    Email=:Email,
+    WebAddress=:WebAddress,
+    Address1=:Address1,
+    Address2=:Address2,
+    City=:City,
+    StateRegion=:StateRegion,
+    Zip=:Zip,
+    Country=:Country,
+    AdditionalInfo=:AdditionalInfo,
+    Notes=:Notes,
     CurbSideNotes=:CurbSideNotes,
     YMT=:YMT,
-    YouthDirector=:YouthDirector, 
-    Board=:Board, 
-    APT=:APT, 
+    YouthDirector=:YouthDirector,
+    Board=:Board,
+    APT=:APT,
     TreeGuardian=:TreeGuardian,
-    FosterCare=:FosterCare, 
-    Volunteer=:Volunteer, 
-    Small=:Small, 
+    FosterCare=:FosterCare,
+    Volunteer=:Volunteer,
+    Small=:Small,
     Tall=:Tall
 
     WHERE id=:id";
@@ -289,7 +289,7 @@ function updateContact($id) {
         $stmt->bindParam("Volunteer", $contact->Volunteer);
         $stmt->bindParam("Small", $contact->Small);
         $stmt->bindParam("Tall", $contact->Tall);
-        
+
         $stmt->execute();
         $db = null;
         echo json_encode($contact);
@@ -323,92 +323,37 @@ function deleteContact($id) {
 
 function findByParameter() {
     $request = Slim::getInstance()->request();
-    $requestparams = json_decode($request->getBody());
-    //$requestparams->FirstName = $FirstName;
-    //$requestparams->LastName = $LastName;
-    //$requestparams->Address1 = $Address1;
-    $FirstName = $requestparams->FirstName;
-    $LastName = $requestparams->LastName;
-    $Company = $requestparams->Company;
-    $Address1 = $requestparams->Address1;
-    $Email1 = $requestparams->Email1;
-    $Phone1 = $requestparams->Phone1;
-    $City = $requestparams->City;
-
-    // Keep track of received parameters
-    $paramsreceived = 0;
-
-    // Check parameters for activity. If not active, assign wildcard for search.
-    // Additionally, add to the received counter if active.
-    if(isset($requestparams->FirstName)) {
-        $FirstName = "%".$FirstName."%";
-        $paramsreceived = $paramsreceived + 1;
-    } else {
-        $FirstName = "%";
-    }
-    if(isset($requestparams->LastName)) {
-        $LastName = "%".$LastName."%";
-        $paramsreceived = $paramsreceived + 1;
-    } else {
-        $LastName = "%";
-    }
-    if(isset($requestparams->Company)) {
-        $Company = "%".$Company."%";
-        $paramsreceived = $paramsreceived + 1;
-    } else {
-        $Company = "%";
-    }
-    if(isset($requestparams->Address1)) {
-        $Address1 = "%".$Address1."%";
-        $paramsreceived = $paramsreceived + 1;
-    } else {
-        $Address1 = "%";
-    }
-    if(isset($requestparams->Email1)) {
-        $Email1 = "%".$Email1."%";
-        $paramsreceived = $paramsreceived + 1;
-    } else {
-        $Email1 = "%";
-    }
-    if(isset($requestparams->Phone1)) {
-        $Phone1 = "%".$Phone1."%";
-        $paramsreceived = $paramsreceived + 1;
-    } else {
-        $Phone1 = "%";
-    }
-    if(isset($requestparams->City)) {
-        $City = "%".$City."%";
-        $paramsreceived = $paramsreceived + 1;
-    } else {
-        $City = "%";
-    }
+    $params = json_decode($request->getBody(), true);
 
     // If no parameters are active, throw an error and exit.
     // If this were not here, the entire database would be returned when no parameters were entered.
-    if($paramsreceived = 0){
-        echo '{"error":{"text":'. $e->getMessage() .'}}';
+    if(count($params) == 0){
+        echo '{"error":{"text":"You must send some search parameters."}}';
         exit;
     }
 
-    $sql = "SELECT * FROM contacts WHERE
-        FirstName LIKE :firstname AND
-        LastName LIKE :lastname AND
-        Company LIKE :company AND
-        Address1 LIKE :address1 AND
-        Email LIKE :email1 AND
-        HomePhone LIKE :phone1 AND
-        City LIKE :city 
-    ORDER BY LastName
-    LIMIT 200";
-    
+    for($i=0;$i<count($params);$i++){
+        if($params[])
+    }
 
-    
+    $sql = "SELECT * FROM contacts WHERE";
+
+
+
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
         //$query = "%".$query."%";
-        
-        $stmt->bindParam("firstname", $FirstName);
+
+        $keys = array_keys($params);
+        for($i=0;$i<count($params);$i++){
+            $paramName = $keys[i];
+            $stmt->bindParam("firstname", $params[$keys[i]]);
+        }
+
+        $sql .= " ORDER BY LastName LIMIT 200";
+
+
         $stmt->bindParam("lastname", $LastName);
         $stmt->bindParam("company", $Company);
         $stmt->bindParam("address1", $Address1);
@@ -430,7 +375,7 @@ function getConnection() {
     $dbuser="root";
     $dbpass="";
     $dbname="treemdb";
-    $dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);  
+    $dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
     $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     return $dbh;
 }
