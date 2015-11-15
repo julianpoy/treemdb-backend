@@ -332,34 +332,20 @@ function findByParameter() {
         exit;
     }
 
-    for($i=0;$i<count($params);$i++){
-        if($params[])
-    }
-
-    $sql = "SELECT * FROM contacts WHERE";
-
-
-
     try {
         $db = getConnection();
         $stmt = $db->prepare($sql);
-        //$query = "%".$query."%";
+
+        $sql = "SELECT * FROM contacts WHERE ";
 
         $keys = array_keys($params);
         for($i=0;$i<count($params);$i++){
-            $paramName = $keys[i];
-            $stmt->bindParam("firstname", $params[$keys[i]]);
+            $stmt->bindParam($keys[i], $params[$keys[i]]);
+            if($i != 0) $sql .= "AND ";
+            $sql .= $keys[i] . " LIKE :" . $keys[i] . " ";
         }
 
-        $sql .= " ORDER BY LastName LIMIT 200";
-
-
-        $stmt->bindParam("lastname", $LastName);
-        $stmt->bindParam("company", $Company);
-        $stmt->bindParam("address1", $Address1);
-        $stmt->bindParam("email1", $Email1);
-        $stmt->bindParam("phone1", $Phone1);
-        $stmt->bindParam("city", $City);
+        $sql .= "ORDER BY LastName LIMIT 200 ";
 
         $stmt->execute();
         $contacts = $stmt->fetchAll(PDO::FETCH_OBJ);
