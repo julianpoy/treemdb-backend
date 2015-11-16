@@ -333,56 +333,64 @@ function findByParameter() {
         "City", "StateRegion", "Zip", "Country",
         "AdditionalInfo", "Notes", "CurbSideNotes", "YMT",
         "YouthDirector", "Board", "APT", "TreeGuardian",
-        "FosterCare", "Volunteer", "Small", "Tall", "Absolute");
-
-    // If no parameters are active, throw an error and exit.
-    // If this were not here, the entire database would be returned when no parameters were entered.
-    if(count($params) == 0){
-        echo '{"error":{"text":"You must send some search parameters."}}';
-        exit;
-    }
+        "FosterCare", "Volunteer", "Small", "Tall", "Absolute", "Random", "query");
 
     //Check all provided keys to ensure only valid keys are being passed
     $keys = array_keys($params);
     $fuzzy = true;
-    $badKey = false;
+    $badKey;
     for($j = 0;$j<count($keys);$j++){
-        if(!in_array($keys[$j], $allowedKeys)) $badKey = true;
-        if($key[$j] == "Absolute" && $params[$j] == true){
+        if(!in_array($keys[$j], $allowedKeys)) $badKey = $keys[$j];
+        if($keys[$j] == "Absolute" && $params[$keys[$j]] == "1"){
             $fuzzy = false;
-            unset($keys[$j]);
-            unset($params[$j]);
+            array_splice($keys, $j, 1);
+            $j--;
+        }
+        if($keys[$j] == "Random" || $keys[$j] == "query" || $keys[$j] == "Absolute" || $params[$keys[$j]] == "undefined" || $params[$keys[$j]] == ""){
+            array_splice($keys, $j, 1);
+            $j--;
         }
     }
 
-    if($badKey){
-        echo '{"error":{"text":"You passed an invalid parameter ' . $key . '"}}';
+    // If no parameters are active, throw an error and exit.
+    // If this were not here, the entire database would be returned when no parameters were entered.
+    if(count($keys) == 0){
+        echo '{"error":{"text":"You must send some search parameters."}}';
+        exit;
+    }
+
+    if(isset($badKey)){
+        echo '{"error":{"text":"You passed an invalid parameter ' . $badKey . '"}}';
         exit;
     }
 
 
     try {
         $db = getConnection();
-        $stmt = $db->prepare($sql);
 
         //Standard sql select to be concatinated to
         $sql = "SELECT * FROM contacts WHERE ";
 
-        //Build query onto select from passed keys and values
-        for($i=0;$i<count($params);$i++){
-
-            //Bind a parameter
-            $stmt->bindParam($keys[i], $params[$keys[i]]);
+        //Build query onto select from passed keys
+        for($i=0;$i<count($keys);$i++){
             //Only on subsequent and not the last
             if($i != 0 && $i != count($params)-1) $sql .= "AND ";
             //Build the sql
-            $value = $keys[i];
-            if($fuzzy) $value = "%" . $value . "%";
-            $sql .= $keys[i] . " LIKE :" . $value . " ";
+            $sql .= $keys[$i] . " LIKE :" . $keys[$i] . " ";
         }
 
         //Finish the sql off
         $sql .= "ORDER BY LastName LIMIT 400 ";
+        //Add to database preparation
+        $stmt = $db->prepare($sql);
+
+        //Add values
+        for($i=0;$i<count($keys);$i++){
+            //Bind a parameter
+            $value = $params[$keys[$i]];
+            if($fuzzy) $value = "%" . $value . "%";
+            $stmt->bindParam($keys[$i], $value);
+        }
 
         $stmt->execute();
         $contacts = $stmt->fetchAll(PDO::FETCH_OBJ);
