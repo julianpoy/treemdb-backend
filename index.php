@@ -333,7 +333,7 @@ function findByParameter() {
         "City", "StateRegion", "Zip", "Country",
         "AdditionalInfo", "Notes", "CurbSideNotes", "YMT",
         "YouthDirector", "Board", "APT", "TreeGuardian",
-        "FosterCare", "Volunteer", "Small", "Tall");
+        "FosterCare", "Volunteer", "Small", "Tall", "Absolute");
 
     // If no parameters are active, throw an error and exit.
     // If this were not here, the entire database would be returned when no parameters were entered.
@@ -344,12 +344,22 @@ function findByParameter() {
 
     //Check all provided keys to ensure only valid keys are being passed
     $keys = array_keys($params);
-    for($key in $keys){
-        if(!in_array($key, $allowedKeys)){
-            echo '{"error":{"text":"You passed an invalid parameter ' . $key . '"}}';
-            exit;
+    $fuzzy = true;
+    $badKey = false;
+    for($j = 0;$j<count($keys);$j++){
+        if(!in_array($keys[$j], $allowedKeys)) $badKey = true;
+        if($key[$j] == "Absolute" && $params[$j] == true){
+            $fuzzy = false;
+            unset($keys[$j]);
+            unset($params[$j]);
         }
     }
+
+    if($badKey){
+        echo '{"error":{"text":"You passed an invalid parameter ' . $key . '"}}';
+        exit;
+    }
+
 
     try {
         $db = getConnection();
@@ -360,12 +370,15 @@ function findByParameter() {
 
         //Build query onto select from passed keys and values
         for($i=0;$i<count($params);$i++){
+
             //Bind a parameter
             $stmt->bindParam($keys[i], $params[$keys[i]]);
             //Only on subsequent and not the last
             if($i != 0 && $i != count($params)-1) $sql .= "AND ";
             //Build the sql
-            $sql .= $keys[i] . " LIKE :" . $keys[i] . " ";
+            $value = $keys[i];
+            if($fuzzy) $value = "%" . $value . "%";
+            $sql .= $keys[i] . " LIKE :" . $value . " ";
         }
 
         //Finish the sql off
