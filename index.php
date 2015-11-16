@@ -346,7 +346,7 @@ function findByParameter() {
             array_splice($keys, $j, 1);
             $j--;
         }
-        if($keys[$j] == "Random" || $keys[$j] == "query" || $keys[$j] == "Absolute" || $params[$keys[$j]] == "undefined" || $params[$keys[$j]] == ""){
+        if($keys[$j] == "Random" || $keys[$j] == "query" || $keys[$j] == "Absolute" || $params[$keys[$j]] == "undefined" || $params[$keys[$j]] == "0" || $params[$keys[$j]] == ""){
             array_splice($keys, $j, 1);
             $j--;
         }
@@ -376,7 +376,12 @@ function findByParameter() {
             //Only on subsequent and not the last
             if($i != 0 && $i != count($params)-1) $sql .= "AND ";
             //Build the sql
-            $sql .= $keys[$i] . " LIKE :" . $keys[$i] . " ";
+
+            if($params[$keys[$i]] == "1"){
+                $sql .= $keys[$i] . " = :" . $keys[$i] . " ";
+            } else {
+                $sql .= $keys[$i] . " LIKE :" . $keys[$i] . " ";
+            }
         }
 
         //Finish the sql off
@@ -384,12 +389,19 @@ function findByParameter() {
         //Add to database preparation
         $stmt = $db->prepare($sql);
 
+        //Values array to hold modified values
+        //This is needed because it turns out pdo bindParam() passes by reference,
+        //therefore each loop iteration would overwrite a single variable. Thus, an array is needed.
+        $values = array();
+
         //Add values
         for($i=0;$i<count($keys);$i++){
             //Bind a parameter
-            $value = $params[$keys[$i]];
-            if($fuzzy) $value = "%" . $value . "%";
-            $stmt->bindParam($keys[$i], $value);
+            $value[$i] = $params[$keys[$i]];
+            if($fuzzy && $value[$i] != "1") $value[$i] = "%" . $value[$i] . "%";
+            if($value[$i] == "1") $value[$i] = 1;
+
+            $stmt->bindParam($keys[$i], $value[$i]);
         }
 
         $stmt->execute();
